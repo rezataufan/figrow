@@ -1,0 +1,73 @@
+<h2>Tampilan Canvas Clean White Ala Figma</h2>
+<p class="subtitle">Membandingkan opsi tampilan canvas bersih putih dengan gaya khas Figma</p>
+
+<div class="cards" data-multiselect>
+  <!-- OPTION A -->
+  <div class="card selected" data-choice="dark-shell-white-canvas" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #2c2c2c; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+      <!-- TOPBAR -->
+      <div style="background: #1e1e1e; height: 14px; border-radius: 3px; display: flex; align-items: center; padding: 0 6px;">
+        <div style="width: 6px; height: 6px; background: #0d99ff; border-radius: 1px;"></div>
+      </div>
+      <!-- WORKSPACE -->
+      <div style="flex: 1; display: flex; gap: 6px;">
+        <div style="width: 32px; background: #262626; border-radius: 3px;"></div>
+        <!-- CLEAN CANVAS -->
+        <div style="flex: 1; background: #f5f5f5; border-radius: 3px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #e0e0e0;">
+          <!-- ARTBOARD FRAME WHITE -->
+          <div style="width: 60%; height: 65%; background: #ffffff; border-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #0d99ff; position: relative;">
+            <span style="position: absolute; top: -11px; left: 0; font-size: 7px; color: #0d99ff; font-weight: bold;">Desktop</span>
+          </div>
+        </div>
+        <div style="width: 38px; background: #262626; border-radius: 3px;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Opsi A: Figma Dark Shell + Clean White Canvas (Rekomendasi Utama)</h3>
+      <p>Panel menu, layers kiri, dan inspector kanan tetap gelap elegan (#2c2c2c), sedangkan <strong>area canvas utama menjadi clean white/soft-gray (#f5f5f5)</strong> dengan artboard frame putih bersih (#ffffff) dan shadow halus khas Figma.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="full-white-light" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #e8e8e8; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+      <!-- TOPBAR -->
+      <div style="background: #ffffff; height: 14px; border-radius: 3px; display: flex; align-items: center; padding: 0 6px; border: 1px solid #dcdcdc;">
+        <div style="width: 6px; height: 6px; background: #0d99ff; border-radius: 1px;"></div>
+      </div>
+      <!-- WORKSPACE -->
+      <div style="flex: 1; display: flex; gap: 6px;">
+        <div style="width: 32px; background: #ffffff; border-radius: 3px; border: 1px solid #dcdcdc;"></div>
+        <!-- CLEAN CANVAS -->
+        <div style="flex: 1; background: #f0f0f0; border-radius: 3px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #dcdcdc;">
+          <div style="width: 60%; height: 65%; background: #ffffff; border-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #0d99ff; position: relative;">
+            <span style="position: absolute; top: -11px; left: 0; font-size: 7px; color: #0d99ff; font-weight: bold;">Desktop</span>
+          </div>
+        </div>
+        <div style="width: 38px; background: #ffffff; border-radius: 3px; border: 1px solid #dcdcdc;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Opsi B: Figma Full Light UI</h3>
+      <p>Seluruh antarmuka menjadi terang: topbar putih (#ffffff), sidebar kiri dan kanan putih bersih (#ffffff), dan canvas abu terang (#f0f0f0).</p>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="page-canvas-color-picker" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #1e1e1e; padding: 12px; display: flex; align-items: center; justify-content: center;">
+      <div style="background: #2c2c2c; border: 1px solid #383838; border-radius: 6px; padding: 8px 12px; font-size: 10px; color: #fff; width: 85%;">
+        <div style="font-weight: 600; margin-bottom: 6px; color: #b3b3b3;">Page Properties (When Canvas Selected)</div>
+        <div style="display: flex; align-items: center; gap: 6px; background: #1e1e1e; border: 1px solid #383838; border-radius: 4px; padding: 4px 8px;">
+          <div style="width: 14px; height: 14px; background: #f5f5f5; border-radius: 2px; border: 1px solid #999;"></div>
+          <span style="font-family: monospace;">#F5F5F5</span>
+          <span style="color: #8c8c8c; margin-left: auto;">100%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Fitur Tambahan: Canvas Color Swatch di Inspector</h3>
+      <p>Seperti di Figma, saat mengklik area kosong canvas (tanpa memilih elemen apapun), panel kanan menampilkan pengaturan <strong>"Page: Canvas Background"</strong> sehingga warna canvas bisa diset bebas (Clean White #FFFFFF, #F5F5F5, atau Dark #1E1E1E) kapan saja.</p>
+    </div>
+  </div>
+</div>
