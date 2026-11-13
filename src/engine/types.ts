@@ -85,6 +85,7 @@ export type PatchOp =
   | { op: 'move'; id: NodeId; parentId: NodeId; beforeId: NodeId | null }
   | { op: 'setAttr'; id: NodeId; name: string; value: string | null }
   | { op: 'setText'; id: NodeId; text: string }
+  | { op: 'setInnerHtml'; id: NodeId; html: string }
   | { op: 'replaceSheet'; file: string; cssText: string }
   | {
       op: 'setDecl';
@@ -121,7 +122,13 @@ export type HostMsg =
   | { t: 'measure'; ids: NodeId[] }
   | { t: 'hitTest'; x: number; y: number; deep: boolean }
   | { t: 'startInlineEdit'; id: NodeId }
-  | { t: 'commitInlineEdit'; id: NodeId };
+  | { t: 'commitInlineEdit'; id: NodeId }
+  | {
+      t: 'execInlineFormat';
+      id: NodeId;
+      command: 'bold' | 'italic' | 'underline' | 'code' | 'createLink' | 'unlink' | 'removeFormat';
+      value?: string;
+    };
 
 export interface MeasuredRectItem {
   id: NodeId;
@@ -129,6 +136,8 @@ export interface MeasuredRectItem {
   classes: string[];
   parentId: NodeId | null;
   display: string;
+  flexDirection?: string;
+  gap?: number;
   fontSize: number;
   rootFontSize: number;
   parentWidth: number;
@@ -142,7 +151,7 @@ export type AgentMsg =
   | { t: 'ack'; seq: number; contentHeight?: number }
   | { t: 'rects'; frame: number; contentHeight: number; items: MeasuredRectItem[] }
   | { t: 'hit'; id: NodeId | null; path: NodeId[]; x: number; y: number }
-  | { t: 'inlineTextCommitted'; id: NodeId; text: string }
+  | { t: 'inlineTextCommitted'; id: NodeId; text: string; innerHtml?: string }
   | { t: 'domHydrated'; bodyHtml: string }
   | {
       t: 'matchedRules';

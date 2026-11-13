@@ -13,6 +13,7 @@ import { useSelectionStore } from '../../store/selectionStore';
 import { useLayersStore } from '../../store/layersStore';
 import { sandboxRegistry } from '../../engine/sandbox/iframeBridge';
 import {
+  commitElementInnerHtmlMutation,
   commitElementTextMutation,
   deleteElementNode,
   duplicateElementNode,
@@ -103,7 +104,14 @@ export function InfiniteCanvas(): React.ReactElement {
       } else if (msg.t === 'inlineTextCommitted') {
         const ab = useCanvasStore.getState().artboards[artboardId];
         if (ab) {
-          commitElementTextMutation(ab.file, msg.id, msg.text);
+          const hasRichTags =
+            typeof msg.innerHtml === 'string' &&
+            /<(strong|b|em|i|u|code|a|span)\b/i.test(msg.innerHtml);
+          if (hasRichTags && msg.innerHtml) {
+            commitElementInnerHtmlMutation(ab.file, msg.id, msg.innerHtml);
+          } else {
+            commitElementTextMutation(ab.file, msg.id, msg.text);
+          }
           useLayersStore.getState().bumpRevision();
         }
         useSelectionStore.getState().stopTextEditing();

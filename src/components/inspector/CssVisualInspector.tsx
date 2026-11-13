@@ -27,6 +27,7 @@ import { UnitScrubInput } from './UnitScrubInput';
 import { LayoutSection } from './LayoutSection';
 import { TypographySection } from './TypographySection';
 import { BackgroundEffectsSection } from './BackgroundEffectsSection';
+import { ElementTraitsSection } from './ElementTraitsSection';
 
 /**
  * CssVisualInspector — Full Implementation of:
@@ -749,6 +750,12 @@ export function CssVisualInspector(): React.ReactElement {
             </button>
           </div>
         </div>
+
+        {/* SECTION -1: HTML ATTRIBUTES, ELEMENT TRAITS & REUSABLE SYMBOLS */}
+        <ElementTraitsSection
+          vnode={cascade.vnode}
+          activeFile={activeArtboard?.file || activeFile || 'index.html'}
+        />
 
         {/* SECTION 0: LAYOUT — DISPLAY, FLEXBOX & GRID (F024–F026 — CSS-02_FLEXBOX_GRID.md) */}
         <LayoutSection

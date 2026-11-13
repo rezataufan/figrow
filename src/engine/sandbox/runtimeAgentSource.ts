@@ -187,6 +187,8 @@ export function buildRuntimeAgentScript(
       classes: classes,
       parentId: parentId || null,
       display: cs.display || 'block',
+      flexDirection: cs.flexDirection || 'row',
+      gap: parsePx(cs.gap) || parsePx(cs.columnGap) || parsePx(cs.rowGap) || 0,
       fontSize: parsePx(cs.fontSize) || 16,
       rootFontSize: rootFontSize,
       parentWidth: parentRect.width || window.innerWidth,
@@ -377,6 +379,13 @@ export function buildRuntimeAgentScript(
       setTimeout(scheduleRectsReport, 60);
       return;
     }
+    if (op.op === 'setInnerHtml') {
+      const el = document.querySelector('[data-vds-id="' + CSS.escape(op.id) + '"]');
+      if (el) el.innerHTML = op.html;
+      scheduleRectsReport();
+      setTimeout(scheduleRectsReport, 60);
+      return;
+    }
     if (op.op === 'remove') {
       const el = document.querySelector('[data-vds-id="' + CSS.escape(op.id) + '"]');
       if (el) el.remove();
@@ -508,6 +517,30 @@ export function buildRuntimeAgentScript(
     el.addEventListener('blur', onBlur);
   }
 
+  function execInlineFormat(id, command, value) {
+    const el = document.querySelector('[data-vds-id="' + CSS.escape(id) + '"]');
+    if (!el) return;
+    el.focus();
+    try {
+      if (command === 'code') {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          const range = sel.getRangeAt(0);
+          const codeEl = document.createElement('code');
+          codeEl.appendChild(range.extractContents());
+          range.insertNode(codeEl);
+        }
+      } else if (command === 'createLink') {
+        document.execCommand('createLink', false, value || '#');
+      } else {
+        document.execCommand(command, false, value || undefined);
+      }
+    } catch (_e) {
+      // Ignore formatting errors in unsupported contexts
+    }
+    scheduleRectsReport();
+  }
+
   function commitInlineEdit(id) {
     const el = document.querySelector('[data-vds-id="' + CSS.escape(id) + '"]');
     if (!el) return;
@@ -518,7 +551,8 @@ export function buildRuntimeAgentScript(
       port.postMessage({
         t: 'inlineTextCommitted',
         id: id,
-        text: el.textContent || ''
+        text: el.textContent || '',
+        innerHtml: el.innerHTML || ''
       });
     }
     scheduleRectsReport();
@@ -577,6 +611,9 @@ export function buildRuntimeAgentScript(
       case 'commitInlineEdit':
         commitInlineEdit(msg.id);
         break;
+      case 'execInlineFormat':
+        execInlineFormat(msg.id, msg.command, msg.value);
+        break;
     }
   }
 
@@ -634,6 +671,20 @@ export function buildRuntimeAgentScript(
     const ro = new ResizeObserver(function() { scheduleRectsReport(); });
     ro.observe(document.documentElement);
   }
+  if ('MutationObserver' in window) {
+    const attachMo = function() {
+      if (!document.body) return;
+      const mo = new MutationObserver(function() {
+        scheduleRectsReport();
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.body) {
+      attachMo();
+    } else {
+      window.addEventListener('DOMContentLoaded', attachMo);
+    }
+  }
   window.addEventListener('resize', scheduleRectsReport);
   window.addEventListener('load', function() {
     scheduleRectsReport();
@@ -677,8 +728,22 @@ export function buildSandboxSrcDoc(
 
   const injectedSheets = new Set<string>();
 
+  // Mask inline <script> bodies (including <script type="text/babel">) before running
+  // HTML tag regexes so HTML strings inside JS template literals (e.g. popup window.print()
+  // templates containing `<style>...</style></body></html>`) are never corrupted!
+  const inlineScriptContents: string[] = [];
+  let processedHtml = html.replace(
+    /(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi,
+    (fullMatch, openTag: string, innerJs: string, closeTag: string) => {
+      if (!innerJs.trim()) return fullMatch;
+      const token = `__VDS_INLINE_SCRIPT_${inlineScriptContents.length}__`;
+      inlineScriptContents.push(innerJs);
+      return `${openTag}${token}${closeTag}`;
+    }
+  );
+
   // Inject any registered offline binary Blob URLs (images, fonts, media)
-  let processedHtml = localAssetRegistry.injectBlobUrls(html);
+  processedHtml = localAssetRegistry.injectBlobUrls(processedHtml);
 
   // Replace local <link rel="stylesheet" href="..."> in-place with <style data-vds-sheet="...">
   // so cascade order relative to Google Fonts, Tailwind, or inline <style> is 100% preserved!
@@ -716,13 +781,13 @@ export function buildSandboxSrcDoc(
       // project asset server resolves sibling/nested CSS & font files seamlessly!
       return fullLinkTag.replace(
         /href=["']([^"']+)["']/i,
-        `href="/__vds_local/${normalizedHref}"`
+        () => `href="/__vds_local/${normalizedHref}"`
       );
     }
   );
 
   // Also rewrite local relative <script src="..."> and <img src="..."> to /__vds_local/<path>
-  // so multi-file HTML apps (like Apotek Coevia POS) load their local JS, icons, and images!
+  // so multi-file HTML apps load their local JS, icons, and images seamlessly!
   processedHtml = processedHtml.replace(
     /<(script|img)\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)>/gi,
     (fullTag, tagName: string, beforeSrc: string, rawSrc: string, afterSrc: string) => {
@@ -762,7 +827,7 @@ export function buildSandboxSrcDoc(
   if (/<head\b[^>]*>/i.test(processedHtml)) {
     processedHtml = processedHtml.replace(
       /(<head\b[^>]*>)/i,
-      `$1\n${safetyHeadInjection}`
+      (_m, headOpenTag: string) => `${headOpenTag}\n${safetyHeadInjection}`
     );
   } else {
     processedHtml = `${safetyHeadInjection}\n${processedHtml}`;
@@ -792,10 +857,23 @@ export function buildSandboxSrcDoc(
   const agentScript = buildRuntimeAgentScript(artboardId, remainingSheets);
   const agentTag = `<script data-vds-agent="true">${agentScript}</script>`;
 
-  if (/<\/body>/i.test(processedHtml)) {
-    processedHtml = processedHtml.replace(/<\/body>/i, `${agentTag}\n</body>`);
+  // Inject agentTag before the LAST </body> tag while inline scripts are still masked
+  const lastBodyCloseIdx = processedHtml.toLowerCase().lastIndexOf('</body>');
+  if (lastBodyCloseIdx !== -1) {
+    processedHtml =
+      processedHtml.slice(0, lastBodyCloseIdx) +
+      `${agentTag}\n` +
+      processedHtml.slice(lastBodyCloseIdx);
   } else {
     processedHtml += `\n${agentTag}`;
+  }
+
+  // Restore all masked inline <script> contents verbatim (using replacer fn to avoid $ patterns)
+  if (inlineScriptContents.length > 0) {
+    processedHtml = processedHtml.replace(
+      /__VDS_INLINE_SCRIPT_(\d+)__/g,
+      (_m, idxStr: string) => inlineScriptContents[Number(idxStr)] ?? ''
+    );
   }
 
   return processedHtml;

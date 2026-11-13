@@ -1,3 +1,105 @@
-node_modules
-dist
-.replica
+# ============================================================================
+# Figrow — Visual DOM & CSS Studio (.gitignore)
+# Comprehensive & Security-Hardened Git Ignore Configuration
+# ============================================================================
+
+# 1. Dependencies & Package Managers
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# 2. Build Outputs & TypeScript Cache
+dist/
+dist-ssr/
+build/
+out/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# 3. Environment Variables, Secrets & Credentials (CRITICAL SECURITY)
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.keystore
+*.jks
+*.gpg
+*.asc
+secrets.*
+credentials.*
+
+# 4. Testing, Coverage & Benchmark Reports
+coverage/
+.nyc_output/
+*.lcov
+playwright-report/
+test-results/
+
+# 5. Logs & Runtime Diagnostic Dumps
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# 6. Local AI Agent / Obsidian / Scratch Workspaces (Keep local, never push)
+.agents/
+.claude/
+.cursor/
+.gemini/
+.obsidian/
+.replica/
+.superpowers/
+docs/superpowers/
+skills-lock.json
+export-preview/
+
+# 7. Editor & IDE Directories
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 8. OS-Generated Metadata Files (Windows / macOS / Linux)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# 9. Temporary, Build & Lint Cache Files
+.vite/
+.temp/
+.tmp/
+.cache/
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.turbo/
+.vercel/
+.netlify/
+*.tmp
+*.bak
+*.swp
+*~

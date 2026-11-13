@@ -539,7 +539,12 @@ export const useLayersStore = create<LayersAndDragStoreState>((set, get) => {
         .filter((b): b is MeasuredRectItem => Boolean(b));
 
       let axis: 'x' | 'y' = 'y';
-      if (childBoxes.length >= 2) {
+      if (
+        chosenContainer.display?.includes('flex') &&
+        !(chosenContainer.flexDirection ?? '').includes('column')
+      ) {
+        axis = 'x';
+      } else if (childBoxes.length >= 2) {
         const dy = Math.abs((childBoxes[1].border.y ?? 0) - (childBoxes[0].border.y ?? 0));
         const dx = Math.abs((childBoxes[1].border.x ?? 0) - (childBoxes[0].border.x ?? 0));
         if (dx > dy && dy < 24) {
@@ -762,7 +767,11 @@ export const useLayersStore = create<LayersAndDragStoreState>((set, get) => {
 
         const rawText = vnode.textContent?.trim() || '';
         const previewText = rawText.length > 0 ? (rawText.length > 25 ? `${rawText.slice(0, 25)}…` : rawText) : undefined;
-        const isComponent = Boolean((meta as any)?.isComponent) || vnode.attrs.some(a => a.name === 'data-vds-component');
+        const isComponent =
+          Boolean((meta as any)?.isComponent) ||
+          vnode.attrs.some(
+            (a) => a.name === 'data-vds-component' || a.name === 'data-vds-symbol'
+          );
 
         rows.push({
           key: id,

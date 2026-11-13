@@ -1,3 +1,5 @@
+import Specificity from '@bramus/specificity';
+import selectorParser from 'postcss-selector-parser';
 import type { CssRuleRef, NodeId, PseudoState, VNode } from '../types';
 import { parseCssRules, parseHtmlToVNodes } from '../ast/htmlAst';
 import { projectDoc, LOCAL_USER_ORIGIN } from '../doc/projectDoc';
@@ -59,10 +61,28 @@ export interface DesignTokenEntry {
 }
 
 /**
- * Calculate simple W3C selector specificity [id, class/attr/pseudo-class, type/pseudo-element]
+ * Calculate W3C CSS Selectors Level 4 specificity [id, class/attr/pseudo-class, type/pseudo-element]
+ * Uses @bramus/specificity (supporting :where, :is, :not, :has) with fallback for partial drafts.
  */
 export function computeSpecificity(selector: string): [number, number, number] {
   const clean = selector.trim();
+  if (!clean) return [0, 0, 0];
+  try {
+    const results = Specificity.calculate(clean);
+    if (results.length > 0) {
+      let best: [number, number, number] = results[0].toArray();
+      for (let i = 1; i < results.length; i++) {
+        const arr = results[i].toArray();
+        if (compareSpecificity(arr, best, 0, 0) > 0) {
+          best = arr;
+        }
+      }
+      return best;
+    }
+  } catch {
+    // Fallback for incomplete/non-standard selectors while typing
+  }
+
   const idMatches = clean.match(/#[a-zA-Z0-9_-]+/g);
   const classMatches = clean.match(/\.[a-zA-Z0-9_-]+/g);
   const attrMatches = clean.match(/\[[^\]]+\]/g);
@@ -140,81 +160,217 @@ export function isMediaQueryActive(media: string | null, artboardWidth: number):
   return true;
 }
 
+interface CompoundSegment {
+  tag: string | null;
+  id: string | null;
+  classes: string[];
+  attrs: Array<{ name: string; operator?: string; value?: string }>;
+  notSegments: string[];
+  isWhereSegments: string[];
+  universal: boolean;
+}
+
+function createEmptyCompound(): CompoundSegment {
+  return {
+    tag: null,
+    id: null,
+    classes: [],
+    attrs: [],
+    notSegments: [],
+    isWhereSegments: [],
+    universal: false,
+  };
+}
+
+function doesCompoundMatchNode(
+  comp: CompoundSegment,
+  target: VNode,
+  allNodes: Record<NodeId, VNode>
+): boolean {
+  const hasAnyConstraint =
+    Boolean(comp.tag) ||
+    Boolean(comp.id) ||
+    comp.classes.length > 0 ||
+    comp.attrs.length > 0 ||
+    comp.notSegments.length > 0 ||
+    comp.isWhereSegments.length > 0 ||
+    comp.universal;
+
+  if (!hasAnyConstraint) return false;
+
+  const tag = target.tag?.toLowerCase() ?? '';
+  if (comp.tag && comp.tag !== tag) return false;
+
+  if (comp.id) {
+    const idAttr = target.attrs.find((a) => a.name === 'id')?.value ?? '';
+    if (comp.id !== idAttr) return false;
+  }
+
+  if (comp.classes.length > 0) {
+    const classList = (target.attrs.find((a) => a.name === 'class')?.value ?? '')
+      .split(/\s+/)
+      .filter(Boolean);
+    for (const reqCls of comp.classes) {
+      if (!classList.includes(reqCls)) return false;
+    }
+  }
+
+  for (const attr of comp.attrs) {
+    if (attr.name === 'data-vds-id' && attr.value !== undefined) {
+      if (target.id !== attr.value) return false;
+      continue;
+    }
+    const foundAttr = target.attrs.find((a) => a.name.toLowerCase() === attr.name);
+    if (!foundAttr) return false;
+    if (attr.operator && attr.value !== undefined) {
+      const actual = foundAttr.value;
+      const expected = attr.value;
+      if (attr.operator === '=' && actual !== expected) return false;
+      if (attr.operator === '^=' && !actual.startsWith(expected)) return false;
+      if (attr.operator === '$=' && !actual.endsWith(expected)) return false;
+      if (attr.operator === '*=' && !actual.includes(expected)) return false;
+      if (attr.operator === '~=' && !actual.split(/\s+/).includes(expected)) return false;
+    }
+  }
+
+  for (const notSel of comp.notSegments) {
+    if (doesBaseSelectorMatchNode(notSel, target, allNodes)) return false;
+  }
+
+  for (const groupSel of comp.isWhereSegments) {
+    if (!doesBaseSelectorMatchNode(groupSel, target, allNodes)) return false;
+  }
+
+  return true;
+}
+
 /**
- * Checks if a simple selector (`.card`, `section.hero`, `#features`, `body`, `[data-vds-id="..."]`)
- * matches a VNode in the AST.
+ * Checks if a CSS selector (`.card`, `section.hero > .btn`, `.a, .b`, `:where(.card)`, `[data-vds-id="..."]`)
+ * matches a VNode in the AST using postcss-selector-parser.
  */
 export function doesBaseSelectorMatchNode(
   baseSelector: string,
   node: VNode,
   allNodes: Record<NodeId, VNode>
 ): boolean {
-  const parts = baseSelector
-    .split(/\s+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  if (parts.length === 0) return false;
+  const trimmed = baseSelector.trim();
+  if (!trimmed) return false;
 
-  const matchSingle = (selPart: string, target: VNode): boolean => {
-    if (selPart === '*') return true;
-    const tag = target.tag?.toLowerCase() ?? '';
-    const idAttr = target.attrs.find((a) => a.name === 'id')?.value ?? '';
-    const classList = (target.attrs.find((a) => a.name === 'class')?.value ?? '')
-      .split(/\s+/)
-      .filter(Boolean);
+  try {
+    let anySelectorMatched = false;
 
-    // Check data-vds-id attribute selector
-    const dataIdMatch = selPart.match(/\[data-vds-id="([^"]+)"\]/);
-    if (dataIdMatch) {
-      return target.id === dataIdMatch[1];
-    }
+    selectorParser((root) => {
+      for (const sel of root.nodes) {
+        if (anySelectorMatched) break;
 
-    // Check ID
-    const idMatch = selPart.match(/#([a-zA-Z0-9_-]+)/);
-    if (idMatch && idMatch[1] !== idAttr) {
-      return false;
-    }
+        const chain: Array<{ compound: CompoundSegment; combinatorBefore: string | null }> = [];
+        let currentCompound = createEmptyCompound();
+        let pendingCombinator: string | null = null;
+        let hasTokenInCompound = false;
 
-    // Check classes
-    const classMatches = Array.from(selPart.matchAll(/\.([a-zA-Z0-9_-]+)/g)).map(
-      (m) => m[1]
-    );
-    for (const reqCls of classMatches) {
-      if (!classList.includes(reqCls)) return false;
-    }
+        for (const token of sel.nodes) {
+          if (token.type === 'combinator') {
+            if (hasTokenInCompound) {
+              chain.push({ compound: currentCompound, combinatorBefore: pendingCombinator });
+              currentCompound = createEmptyCompound();
+              hasTokenInCompound = false;
+            }
+            pendingCombinator = token.value.trim() || ' ';
+          } else if (token.type === 'tag') {
+            currentCompound.tag = token.value.toLowerCase();
+            hasTokenInCompound = true;
+          } else if (token.type === 'universal') {
+            currentCompound.universal = true;
+            hasTokenInCompound = true;
+          } else if (token.type === 'id') {
+            currentCompound.id = token.value;
+            hasTokenInCompound = true;
+          } else if (token.type === 'class') {
+            currentCompound.classes.push(token.value);
+            hasTokenInCompound = true;
+          } else if (token.type === 'attribute') {
+            currentCompound.attrs.push({
+              name: token.attribute.trim().toLowerCase(),
+              operator: token.operator,
+              value: token.value?.replace(/^["']|["']$/g, ''),
+            });
+            hasTokenInCompound = true;
+          } else if (token.type === 'pseudo') {
+            const pName = token.value.toLowerCase();
+            const innerStr = token.nodes?.map((n) => n.toString()).join(', ').trim() ?? '';
+            if (pName === ':not' && innerStr) {
+              currentCompound.notSegments.push(innerStr);
+              hasTokenInCompound = true;
+            } else if ((pName === ':is' || pName === ':where') && innerStr) {
+              currentCompound.isWhereSegments.push(innerStr);
+              hasTokenInCompound = true;
+            }
+          }
+        }
 
-    // Check tag prefix
-    const tagPrefix = selPart.replace(/[#.[\]:].*$/, '').trim().toLowerCase();
-    if (tagPrefix && tagPrefix !== tag) {
-      return false;
-    }
+        if (hasTokenInCompound) {
+          chain.push({ compound: currentCompound, combinatorBefore: pendingCombinator });
+        }
 
-    return Boolean(tagPrefix || idMatch || classMatches.length > 0);
-  };
+        if (chain.length === 0) continue;
 
-  const lastPart = parts[parts.length - 1];
-  if (!matchSingle(lastPart, node)) return false;
+        const lastStep = chain[chain.length - 1];
+        if (!doesCompoundMatchNode(lastStep.compound, node, allNodes)) {
+          continue;
+        }
 
-  if (parts.length === 1) return true;
+        if (chain.length === 1) {
+          anySelectorMatched = true;
+          break;
+        }
 
-  // Verify ancestor chain for descendant selectors (e.g. `.hero .btn--primary`)
-  let currParentId = node.parent;
-  for (let i = parts.length - 2; i >= 0; i--) {
-    const needed = parts[i];
-    if (needed === '>') continue;
-    let found = false;
-    while (currParentId && allNodes[currParentId]) {
-      const anc = allNodes[currParentId];
-      currParentId = anc.parent;
-      if (matchSingle(needed, anc)) {
-        found = true;
-        break;
+        // Walk ancestor/sibling chain backwards
+        let currNode: VNode | undefined = node;
+        let chainMatched = true;
+
+        for (let i = chain.length - 2; i >= 0; i--) {
+          const step = chain[i];
+          const comb = chain[i + 1].combinatorBefore || ' ';
+
+          if (comb === '>') {
+            const pId: NodeId | null | undefined = currNode?.parent;
+            const parentNode: VNode | undefined = pId ? allNodes[pId] : undefined;
+            if (!parentNode || !doesCompoundMatchNode(step.compound, parentNode, allNodes)) {
+              chainMatched = false;
+              break;
+            }
+            currNode = parentNode;
+          } else {
+            // Descendant combinator (' ')
+            let pId = currNode?.parent ?? null;
+            let foundAnc: VNode | undefined;
+            while (pId && allNodes[pId]) {
+              const cand = allNodes[pId];
+              pId = cand.parent;
+              if (doesCompoundMatchNode(step.compound, cand, allNodes)) {
+                foundAnc = cand;
+                break;
+              }
+            }
+            if (!foundAnc) {
+              chainMatched = false;
+              break;
+            }
+            currNode = foundAnc;
+          }
+        }
+
+        if (chainMatched) {
+          anySelectorMatched = true;
+          break;
+        }
       }
-    }
-    if (!found) return false;
-  }
+    }).processSync(trimmed);
 
-  return true;
+    return anySelectorMatched;
+  } catch {
+    return false;
+  }
 }
 
 /**

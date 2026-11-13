@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <!-- Background gradients -->
+    <linearGradient id="bg-base" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="55%" stop-color="#0f1526" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+
+    <radialGradient id="glow-indigo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(920 260) rotate(135) scale(520 380)">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.22" />
+      <stop offset="60%" stop-color="#4f46e5" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="glow-emerald" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(220 520) rotate(25) scale(380 260)">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="logo-grad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+
+    <linearGradient id="accent-line" x1="80" y1="0" x2="520" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.9" />
+      <stop offset="60%" stop-color="#10b981" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="card-surface" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#131c31" />
+      <stop offset="100%" stop-color="#0d1322" />
+    </linearGradient>
+
+    <!-- 24px subtle dot/grid canvas pattern at 6% opacity -->
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="1" fill="#94a3b8" fill-opacity="0.12" />
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#94a3b8" stroke-opacity="0.05" stroke-width="1" />
+    </pattern>
+
+    <!-- Drop shadows -->
+    <filter id="shadow-lg" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.65" />
+    </filter>
+    <filter id="shadow-md" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#020617" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Base Canvas -->
+  <rect width="1280" height="640" fill="url(#bg-base)" />
+  <rect width="1280" height="640" fill="url(#dot-grid)" />
+  <rect width="1280" height="640" fill="url(#glow-indigo)" />
+  <rect width="1280" height="640" fill="url(#glow-emerald)" />
+
+  <!-- Subtle outer frame -->
+  <rect x="24" y="24" width="1232" height="592" rx="20" stroke="#1e293b" stroke-width="1" stroke-opacity="0.7" />
+
+  <!-- ========================================================= -->
+  <!-- LEFT COLUMN (Safe zone x=80..565, y=72..568)              -->
+  <!-- ========================================================= -->
+
+  <!-- Top Pill Badge -->
+  <g transform="translate(80, 78)">
+    <rect width="368" height="32" rx="16" fill="#0f172a" stroke="#1e293b" stroke-width="1.2" />
+    <circle cx="18" cy="16" r="4.5" fill="#10b981" />
+    <circle cx="18" cy="16" r="8" fill="#10b981" fill-opacity="0.2" />
+    <text x="32" y="20.5" fill="#cbd5e1" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1">OPEN SOURCE • LOCAL-FIRST • MIT LICENSE</text>
+  </g>
+
+  <!-- Brand Logo Mark + Wordmark -->
+  <g transform="translate(80, 142)">
+    <!-- Geometric Studio Icon -->
+    <rect width="58" height="58" rx="14" fill="url(#logo-grad)" />
+    <rect x="1" y="1" width="56" height="56" rx="13" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1" />
+    <!-- Stylized Artboard/F Nodes inside logo -->
+    <rect x="14" y="14" width="16" height="12" rx="3" fill="#ffffff" />
+    <rect x="34" y="14" width="10" height="30" rx="3" fill="#ffffff" fill-opacity="0.35" />
+    <rect x="14" y="30" width="16" height="14" rx="3" fill="#ffffff" fill-opacity="0.85" />
+    <circle cx="39" cy="19" r="2.2" fill="#ffffff" />
+
+    <!-- Wordmark -->
+    <text x="76" y="49" fill="#f8fafc" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="60" font-weight="800" letter-spacing="-1.5">Figrow</text>
+  </g>
+
+  <!-- Subtitle -->
+  <text x="80" y="244" fill="#94a3b8" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="26" font-weight="600" letter-spacing="-0.3">Visual DOM &amp; CSS Studio</text>
+
+  <!-- Accent Divider -->
+  <rect x="80" y="266" width="440" height="2" rx="1" fill="url(#accent-line)" />
+
+  <!-- Architecture / Feature Chips (2x2 clean grid) -->
+  <g transform="translate(80, 294)" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="13.5" font-weight="600">
+    <!-- Chip 1 -->
+    <rect x="0" y="0" width="212" height="38" rx="9" fill="#111827" stroke="#334155" stroke-width="1" />
+    <circle cx="18" cy="19" r="4" fill="#6366f1" />
+    <text x="32" y="23.5" fill="#e2e8f0">Multi-Artboard Canvas</text>
+
+    <!-- Chip 2 -->
+    <rect x="224" y="0" width="218" height="38" rx="9" fill="#111827" stroke="#334155" stroke-width="1" />
+    <circle cx="242" cy="19" r="4" fill="#10b981" />
+    <text x="256" y="23.5" fill="#e2e8f0">parse5 + PostCSS AST</text>
+
+    <!-- Chip 3 -->
+    <rect x="0" y="50" width="176" height="38" rx="9" fill="#111827" stroke="#334155" stroke-width="1" />
+    <circle cx="18" cy="69" r="4" fill="#06b6d4" />
+    <text x="32" y="73.5" fill="#e2e8f0">Yjs CRDT History</text>
+
+    <!-- Chip 4 -->
+    <rect x="188" y="50" width="194" height="38" rx="9" fill="#111827" stroke="#334155" stroke-width="1" />
+    <circle cx="206" cy="69" r="4" fill="#f59e0b" />
+    <text x="220" y="73.5" fill="#e2e8f0">WebMCP AI Ready</text>
+  </g>
+
+  <!-- Value Prop Micro-Summary -->
+  <text x="80" y="424" fill="#94a3b8" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="15" font-weight="400">
+    Lossless HTML5 &amp; CSS round-trip editing via exact byte-range
+  </text>
+  <text x="80" y="447" fill="#94a3b8" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="15" font-weight="400">
+    splicing. Zero proprietary lock-in — your files stay pure code.
+  </text>
+
+  <!-- Contributor Callout Ribbon (Bottom-Left inside safe zone) -->
+  <g transform="translate(80, 492)">
+    <rect width="468" height="46" rx="11" fill="#0f172a" stroke="#6366f1" stroke-opacity="0.55" stroke-width="1.2" />
+    <rect x="1" y="1" width="466" height="44" rx="10" fill="#6366f1" fill-opacity="0.08" />
+    <!-- Star badge -->
+    <rect x="12" y="11" width="24" height="24" rx="6" fill="#10b981" fill-opacity="0.18" stroke="#10b981" stroke-opacity="0.4" />
+    <text x="18.5" y="27.5" fill="#34d399" font-family="'Segoe UI Symbol', sans-serif" font-size="13">★</text>
+    <text x="48" y="28" fill="#f1f5f9" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="13.5" font-weight="600">
+      Built in TypeScript &amp; React 19 — <tspan fill="#34d399" font-weight="700">Contributors Welcome!</tspan>
+    </text>
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- RIGHT COLUMN: STUDIO UI MOCKUP (x=590..1200, y=68..572)   -->
+  <!-- ========================================================= -->
+
+  <!-- Outer Infinite Canvas Stage -->
+  <g filter="url(#shadow-lg)">
+    <rect x="590" y="68" width="610" height="504" rx="16" fill="url(#card-surface)" stroke="#1e293b" stroke-width="1.5" />
+  </g>
+
+  <!-- Studio Top Bar -->
+  <path d="M 590 84 C 590 75.16 597.16 68 606 68 L 1184 68 C 1192.84 68 1200 75.16 1200 84 L 1200 104 L 590 104 Z" fill="#0b101d" />
+  <line x1="590" y1="104" x2="1200" y2="104" stroke="#1e293b" stroke-width="1" />
+  <!-- Window Dots -->
+  <circle cx="612" cy="86" r="4.5" fill="#ef4444" fill-opacity="0.8" />
+  <circle cx="628" cy="86" r="4.5" fill="#f59e0b" fill-opacity="0.8" />
+  <circle cx="644" cy="86" r="4.5" fill="#10b981" fill-opacity="0.8" />
+  <!-- Studio Breadcrumb -->
+  <text x="668" y="90" fill="#64748b" font-family="'JetBrains Mono', 'Cascadia Code', Consolas, monospace" font-size="11.5" font-weight="600">figrow-studio</text>
+  <text x="766" y="90" fill="#475569" font-family="'JetBrains Mono', Consolas, monospace" font-size="11.5">/</text>
+  <text x="778" y="90" fill="#cbd5e1" font-family="'JetBrains Mono', Consolas, monospace" font-size="11.5">index.html</text>
+  <!-- Live Sync Pill -->
+  <rect x="1086" y="75" width="98" height="22" rx="11" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.4" />
+  <circle cx="1099" cy="86" r="3.2" fill="#10b981" />
+  <text x="1108" y="90" fill="#34d399" font-family="'Inter', 'Segoe UI', sans-serif" font-size="10.5" font-weight="700">CRDT SYNC</text>
+
+  <!-- Infinite Canvas Subtle Grid inside stage -->
+  <rect x="591" y="105" width="608" height="356" fill="url(#dot-grid)" />
+
+  <!-- ARTBOARD 1: Desktop 1440px -->
+  <text x="614" y="126" fill="#94a3b8" font-family="'JetBrains Mono', Consolas, monospace" font-size="10.5" font-weight="600">Desktop · 1440px</text>
+  <g filter="url(#shadow-md)">
+    <rect x="614" y="134" width="246" height="264" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+  </g>
+  <!-- Mini Page Header inside Desktop Artboard -->
+  <rect x="626" y="146" width="44" height="8" rx="3" fill="#334155" />
+  <rect x="780" y="146" width="28" height="8" rx="3" fill="#1e293b" />
+  <rect x="814" y="146" width="32" height="8" rx="3" fill="#6366f1" fill-opacity="0.6" />
+
+  <!-- Selected Element: .hero-card inside Desktop Artboard -->
+  <rect x="628" y="176" width="218" height="148" rx="8" fill="#1e293b" fill-opacity="0.65" />
+  <!-- Padding Measurement Guides (24px) -->
+  <rect x="628" y="176" width="218" height="20" fill="#ec4899" fill-opacity="0.16" />
+  <rect x="628" y="304" width="218" height="20" fill="#ec4899" fill-opacity="0.16" />
+  <rect x="628" y="196" width="20" height="108" fill="#10b981" fill-opacity="0.16" />
+  <line x1="638" y1="176" x2="638" y2="196" stroke="#ec4899" stroke-width="1" stroke-dasharray="2 2" />
+  <rect x="644" y="179" width="32" height="14" rx="3" fill="#ec4899" />
+  <text x="648" y="189" fill="#ffffff" font-family="'JetBrains Mono', Consolas, monospace" font-size="9" font-weight="700">24px</text>
+
+  <!-- Inner Content of .hero-card -->
+  <rect x="652" y="204" width="124" height="13" rx="3" fill="#f8fafc" fill-opacity="0.9" />
+  <rect x="652" y="225" width="168" height="8" rx="2.5" fill="#94a3b8" fill-opacity="0.55" />
+  <rect x="652" y="239" width="142" height="8" rx="2.5" fill="#94a3b8" fill-opacity="0.4" />
+  <!-- Gap guide between text & CTA -->
+  <rect x="652" y="253" width="60" height="14" fill="#10b981" fill-opacity="0.22" />
+  <text x="668" y="263" fill="#34d399" font-family="'JetBrains Mono', Consolas, monospace" font-size="8.5" font-weight="700">24px</text>
+  <!-- CTA Button inside card -->
+  <rect x="652" y="272" width="84" height="24" rx="6" fill="#6366f1" />
+  <rect x="668" y="281" width="52" height="6" rx="2" fill="#ffffff" fill-opacity="0.9" />
+
+  <!-- Lower blocks on Desktop Artboard -->
+  <rect x="628" y="338" width="102" height="44" rx="6" fill="#1e293b" fill-opacity="0.5" stroke="#334155" stroke-width="1" />
+  <rect x="744" y="338" width="102" height="44" rx="6" fill="#1e293b" fill-opacity="0.5" stroke="#334155" stroke-width="1" />
+
+  <!-- Active Indigo Selection Bounding Box + 8 Resize Handles -->
+  <rect x="628" y="176" width="218" height="148" stroke="#6366f1" stroke-width="2" />
+  <!-- Element Tag Pill -->
+  <rect x="628" y="158" width="112" height="18" rx="4" fill="#6366f1" />
+  <text x="635" y="170.5" fill="#ffffff" font-family="'JetBrains Mono', Consolas, monospace" font-size="9.5" font-weight="700">section.hero-card</text>
+  <!-- 8 Resize Handles -->
+  <rect x="625" y="173" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="734" y="173" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="843" y="173" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="625" y="247" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="843" y="247" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="625" y="321" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="734" y="321" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+  <rect x="843" y="321" width="6" height="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" />
+
+  <!-- ARTBOARD 2: Mobile 375px -->
+  <text x="872" y="146" fill="#94a3b8" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600">Mobile · 375px</text>
+  <g filter="url(#shadow-md)">
+    <rect x="872" y="154" width="106" height="232" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+  </g>
+  <!-- Mobile Notch & Header -->
+  <rect x="905" y="160" width="40" height="4" rx="2" fill="#334155" />
+  <rect x="882" y="174" width="30" height="6" rx="2" fill="#334155" />
+  <rect x="956" y="174" width="12" height="6" rx="2" fill="#6366f1" fill-opacity="0.7" />
+  <!-- Synchronized Mobile .hero-card -->
+  <rect x="882" y="192" width="86" height="114" rx="6" fill="#1e293b" fill-opacity="0.75" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="3 2" />
+  <rect x="891" y="206" width="60" height="10" rx="2.5" fill="#f8fafc" fill-opacity="0.88" />
+  <rect x="891" y="222" width="66" height="6" rx="2" fill="#94a3b8" fill-opacity="0.5" />
+  <rect x="891" y="233" width="52" height="6" rx="2" fill="#94a3b8" fill-opacity="0.4" />
+  <rect x="891" y="254" width="66" height="20" rx="5" fill="#6366f1" />
+  <!-- Mobile Stacked Card -->
+  <rect x="882" y="318" width="86" height="50" rx="6" fill="#1e293b" fill-opacity="0.5" stroke="#334155" stroke-width="1" />
+
+  <!-- ========================================================= -->
+  <!-- FLOATING CSS CASCADE & AST INSPECTOR CARD                 -->
+  <!-- ========================================================= -->
+  <g filter="url(#shadow-lg)">
+    <rect x="962" y="122" width="228" height="330" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.4" />
+  </g>
+  <!-- Inspector Header -->
+  <path d="M 962 134 C 962 127.37 967.37 122 974 122 L 1178 122 C 1184.63 122 1190 127.37 1190 134 L 1190 154 L 962 154 Z" fill="#131c31" />
+  <line x1="962" y1="154" x2="1190" y2="154" stroke="#1e293b" stroke-width="1" />
+  <text x="974" y="142" fill="#94a3b8" font-family="'Inter', 'Segoe UI', sans-serif" font-size="10.5" font-weight="700" letter-spacing="0.8">CSS CASCADE</text>
+  <!-- W3C Specificity Badge -->
+  <rect x="1120" y="129" width="58" height="18" rx="5" fill="#6366f1" fill-opacity="0.22" stroke="#6366f1" stroke-opacity="0.5" />
+  <text x="1126" y="141.5" fill="#a5b4fc" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="700">(0, 1, 1)</text>
+
+  <!-- Selector Pill -->
+  <rect x="974" y="166" width="204" height="28" rx="6" fill="#090d16" stroke="#1e293b" stroke-width="1" />
+  <text x="984" y="184" fill="#38bdf8" font-family="'JetBrains Mono', Consolas, monospace" font-size="11.5" font-weight="600">.hero-card<tspan fill="#f472b6">:hover</tspan></text>
+
+  <!-- Visual Box Model Diagram -->
+  <g transform="translate(974, 206)">
+    <!-- Margin Box -->
+    <rect x="0" y="0" width="204" height="122" rx="6" fill="#f59e0b" fill-opacity="0.08" stroke="#f59e0b" stroke-opacity="0.45" stroke-dasharray="3 2" />
+    <text x="8" y="12" fill="#fbbf24" font-family="'JetBrains Mono', Consolas, monospace" font-size="8.5" font-weight="600">margin</text>
+    <text x="98" y="12" fill="#fbbf24" font-family="'JetBrains Mono', Consolas, monospace" font-size="8.5">0</text>
+    <text x="98" y="117" fill="#fbbf24" font-family="'JetBrains Mono', Consolas, monospace" font-size="8.5">0</text>
+
+    <!-- Border Box -->
+    <rect x="16" y="18" width="172" height="86" rx="5" fill="#64748b" fill-opacity="0.14" stroke="#64748b" stroke-opacity="0.5" />
+    <text x="22" y="29" fill="#94a3b8" font-family="'JetBrains Mono', Consolas, monospace" font-size="8">border 1px</text>
+
+    <!-- Padding Box -->
+    <rect x="32" y="34" width="140" height="54" rx="4" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.55" />
+    <text x="38" y="45" fill="#34d399" font-family="'JetBrains Mono', Consolas, monospace" font-size="8.5" font-weight="600">padding 24</text>
+
+    <!-- Content Box -->
+    <rect x="48" y="50" width="108" height="24" rx="3" fill="#6366f1" fill-opacity="0.32" stroke="#6366f1" stroke-opacity="0.8" />
+    <text x="74" y="65.5" fill="#e0e7ff" font-family="'JetBrains Mono', Consolas, monospace" font-size="9.5" font-weight="700">360 × 184</text>
+  </g>
+
+  <!-- Live CSS Properties -->
+  <g transform="translate(974, 342)" font-family="'JetBrains Mono', Consolas, monospace" font-size="10.5">
+    <rect x="0" y="0" width="204" height="94" rx="6" fill="#090d16" stroke="#1e293b" stroke-width="1" />
+    <text x="10" y="20" fill="#94a3b8">display: <tspan fill="#e2e8f0">flex</tspan>;</text>
+    <text x="10" y="39" fill="#94a3b8">gap: <tspan fill="#34d399">24px</tspan>;</text>
+    <text x="10" y="58" fill="#94a3b8">padding: <tspan fill="#34d399">24px</tspan>;</text>
+    <text x="10" y="77" fill="#94a3b8">border-color: <tspan fill="#a5b4fc">#6366f1</tspan>;</text>
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- BOTTOM MONACO AST CODE STRIP                              -->
+  <!-- ========================================================= -->
+  <g transform="translate(614, 472)">
+    <rect width="562" height="80" rx="10" fill="#090d16" stroke="#334155" stroke-width="1.2" />
+    <!-- Strip Header -->
+    <path d="M 0 10 C 0 4.48 4.48 0 10 0 L 552 0 C 557.52 0 562 4.48 562 10 L 562 26 L 0 26 Z" fill="#0f172a" />
+    <line x1="0" y1="26" x2="562" y2="26" stroke="#1e293b" stroke-width="1" />
+    <text x="14" y="17" fill="#e2e8f0" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600">index.html</text>
+    <text x="90" y="17" fill="#64748b" font-family="'JetBrains Mono', Consolas, monospace" font-size="10">styles.css</text>
+
+    <!-- Byte-Range Spliced Badge -->
+    <rect x="412" y="4" width="140" height="18" rx="4" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-opacity="0.4" />
+    <text x="421" y="16" fill="#34d399" font-family="'JetBrains Mono', Consolas, monospace" font-size="9.5" font-weight="700">↔ Byte-Range Spliced</text>
+
+    <!-- Code Lines -->
+    <rect x="6" y="31" width="550" height="20" rx="3" fill="#6366f1" fill-opacity="0.12" />
+    <text x="14" y="45" fill="#475569" font-family="'JetBrains Mono', Consolas, monospace" font-size="11">14</text>
+    <text x="38" y="45" fill="#f472b6" font-family="'JetBrains Mono', Consolas, monospace" font-size="11.5">&lt;section <tspan fill="#94a3b8">class=</tspan><tspan fill="#34d399">"hero-card"</tspan>&gt;</text>
+
+    <text x="14" y="65" fill="#475569" font-family="'JetBrains Mono', Consolas, monospace" font-size="11">15</text>
+    <text x="38" y="65" fill="#f472b6" font-family="'JetBrains Mono', Consolas, monospace" font-size="11.5">  &lt;h2 <tspan fill="#94a3b8">class=</tspan><tspan fill="#34d399">"title"</tspan>&gt;<tspan fill="#e2e8f0">Ship clean DOM</tspan>&lt;/h2&gt;</text>
+  </g>
+</svg>

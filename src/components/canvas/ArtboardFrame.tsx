@@ -219,6 +219,28 @@ export function ArtboardFrame({
       }
 
       if (movedBeyondThreshold) {
+        // AutoScroller (GrapesJS AutoScroller pattern): smoothly pan camera when dragging near stage edge
+        const stageEl = document.getElementById('vds-canvas-stage');
+        if (stageEl) {
+          const sr = stageEl.getBoundingClientRect();
+          const edgeThreshold = 42;
+          let panX = 0;
+          let panY = 0;
+          if (moveEv.clientY < sr.top + edgeThreshold && moveEv.clientY >= sr.top) {
+            panY = 8;
+          } else if (moveEv.clientY > sr.bottom - edgeThreshold && moveEv.clientY <= sr.bottom) {
+            panY = -8;
+          }
+          if (moveEv.clientX < sr.left + edgeThreshold && moveEv.clientX >= sr.left) {
+            panX = 8;
+          } else if (moveEv.clientX > sr.right - edgeThreshold && moveEv.clientX <= sr.right) {
+            panX = -8;
+          }
+          if (panX !== 0 || panY !== 0) {
+            useCanvasStore.getState().panBy(panX, panY);
+          }
+        }
+
         const rectsMap = useCanvasStore.getState().measuredRects[artboard.id] ?? {};
         if (isDraggingElement && targetDragKey && dragBox) {
           dragDx = curPt.x - startPt.x;

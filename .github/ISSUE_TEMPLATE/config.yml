@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 🔒 Report a Security Vulnerability
+    url: https://github.com/figrow/figrow/security/advisories/new
+    about: Please report sandbox or XSS vulnerabilities privately via GitHub Security Advisories.
+  - name: 💬 Community Discussions & Q&A
+    url: https://github.com/figrow/figrow/discussions
+    about: Ask questions, share architectural ideas, or showcase what you built with Figrow.

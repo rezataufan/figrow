@@ -35,6 +35,8 @@ import { MonacoBottomPanel } from './components/code/MonacoBottomPanel';
 import { InsertPanel } from './components/library/InsertPanel';
 import { AssetManagerPanel } from './components/library/AssetManagerPanel';
 import { ExportModal } from './components/export/ExportModal';
+import { CommandPaletteModal } from './components/common/CommandPaletteModal';
+import { registerFigrowWebMcp } from './engine/commands/commandRegistry';
 import { projectDoc } from './engine/doc/projectDoc';
 import {
   deleteElementNode,
@@ -164,6 +166,7 @@ export function App(): React.ReactElement {
   const [exportInitialTab, setExportInitialTab] = useState<
     'settings' | 'auditor'
   >('settings');
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
   const [statusToast, setStatusToast] = useState<string | null>(null);
 
@@ -240,6 +243,19 @@ export function App(): React.ReactElement {
     window.addEventListener('pointerdown', onPointerDown);
     return () => window.removeEventListener('pointerdown', onPointerDown);
   }, [openMenu]);
+
+  // Register WebMCP AI Agent Bridge & Ctrl+K / Cmd+K Command Palette Shortcut
+  useEffect(() => {
+    registerFigrowWebMcp();
+    const onKeyDown = (e: KeyboardEvent): void => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   // Action Helpers for Toolbar & Menu Bar
   const handleUndo = (): void => {
@@ -1029,6 +1045,21 @@ export function App(): React.ReactElement {
         </nav>
 
         <div className="vds-menubar-status">
+          <button
+            type="button"
+            className="vds-status-pill"
+            style={{
+              cursor: 'pointer',
+              background: 'rgba(56, 189, 248, 0.14)',
+              color: '#38bdf8',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              fontWeight: 600,
+            }}
+            title="Open Command Palette (Ctrl+K)"
+            onClick={() => setCommandPaletteOpen(true)}
+          >
+            ⌘K Commands
+          </button>
           <span className="vds-status-pill">
             Active:{' '}
             {activeArtboard
@@ -1509,6 +1540,16 @@ export function App(): React.ReactElement {
           onClose={() => setExportOpen(false)}
         />
       )}
+
+      <CommandPaletteModal
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onOpenExport={() => {
+          setExportInitialTab('settings');
+          setExportOpen(true);
+        }}
+        onToast={showToast}
+      />
     </div>
   );
 }

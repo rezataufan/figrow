@@ -2,15 +2,15 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 
 function localProjectAssetServer() {
   let activeBaseDir = '';
-  const candidateRoots = [
-    'C:\\Users\\LENOVO\\AppData\\Local\\Programs\\Apotek Coevia POS\\frontend',
-    'F:\\AI VAULT\\Image Preview\\src\\renderer',
-    'F:\\AI VAULT\\Sistem Apotek\\web',
-    'F:\\AI VAULT\\Sistem Apotek',
-  ];
+  const envDirs = (process.env.FIGROW_ASSET_DIRS ?? '')
+    .split(path.delimiter)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const candidateRoots: string[] = [...envDirs];
 
   const findProjectRootForAssets = (linkedAssets: string[]): string | null => {
     const cleanRels = linkedAssets.map((r) => r.replace(/^\.?\//, '').replace(/\//g, path.sep));
@@ -19,13 +19,15 @@ function localProjectAssetServer() {
         return root;
       }
     }
+    const homeDir = os.homedir();
+    const parentWorkspaceDir = path.resolve(__dirname, '..');
     const searchBases = [
-      'F:\\AI VAULT',
-      'F:\\Apotik',
-      'C:\\Users\\LENOVO\\AppData\\Local\\Programs',
-      'C:\\Users\\LENOVO\\Downloads',
-      'C:\\Users\\LENOVO\\Documents',
-      'C:\\Users\\LENOVO\\Desktop',
+      ...envDirs,
+      parentWorkspaceDir,
+      path.join(homeDir, 'AppData', 'Local', 'Programs'),
+      path.join(homeDir, 'Downloads'),
+      path.join(homeDir, 'Documents'),
+      path.join(homeDir, 'Desktop'),
     ];
     for (const base of searchBases) {
       if (!fs.existsSync(base)) continue;
@@ -183,7 +185,7 @@ function localProjectAssetServer() {
           return;
         }
 
-        // Mock /api/rpc for Apotek Coevia POS so browser-adapter.js never throws 404 alert popups
+        // Mock /api/rpc for desktop/Electron hybrid web apps so RPC calls don't throw 404 popups in canvas preview
         if (cleanUrl === '/api/rpc') {
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');

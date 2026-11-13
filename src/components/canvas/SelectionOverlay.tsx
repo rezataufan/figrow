@@ -4,6 +4,7 @@ import {
   Copy,
   Trash2,
   Type as TypeIcon,
+  Component as SymbolIcon,
 } from 'lucide-react';
 import type { ArtboardDef, MeasuredRectItem, NodeId } from '../../engine/types';
 import {
@@ -25,6 +26,11 @@ import {
   duplicateElementNode,
   pxToUnit,
 } from '../../engine/ast/htmlAst';
+import { makeElementSymbol } from '../../engine/components/symbolSyncEngine';
+import {
+  CanvasSpacingSpots,
+  FloatingRichTextToolbar,
+} from './CanvasSpacingAndRichTextSpots';
 
 /**
  * SelectionOverlay — Full implementation of CANVAS-02_SELECTION_BOUNDS.md
@@ -816,6 +822,19 @@ export function SelectionOverlay({
             <button
               type="button"
               className="vds-ctx-btn"
+              title="Create / Sync Reusable Symbol Across Pages"
+              style={{ color: '#a78bfa' }}
+              onClick={() => {
+                makeElementSymbol(artboard.file, primaryBox.id);
+                useLayersStore.getState().bumpRevision();
+                useInspectorStore.getState().bumpInspector();
+              }}
+            >
+              <SymbolIcon size={12} />
+            </button>
+            <button
+              type="button"
+              className="vds-ctx-btn"
               title="Duplicate Element (Ctrl+D)"
               onClick={() => {
                 const clonedId = duplicateElementNode(artboard.file, primaryBox.id);
@@ -838,6 +857,15 @@ export function SelectionOverlay({
             </button>
           </div>
 
+          {/* ON-CANVAS PADDING & FLEX/GRID GAP DRAG HANDLES */}
+          {!isInlineElement && (
+            <CanvasSpacingSpots
+              artboard={artboard}
+              primaryBox={primaryBox}
+              zoom={zoom}
+            />
+          )}
+
           {/* 8-POINT RESIZE HANDLES (F010) */}
           {!isInlineElement &&
             RESIZE_HANDLES.map((h) => (
@@ -852,6 +880,15 @@ export function SelectionOverlay({
               />
             ))}
         </div>
+      )}
+
+      {/* FLOATING RICH-TEXT FORMATTING MINI-TOOLBAR (GrapesJS RichTextEditor UX) */}
+      {primaryBox && mode === 'textEditing' && (
+        <FloatingRichTextToolbar
+          artboardId={artboard.id}
+          primaryBox={primaryBox}
+          zoom={zoom}
+        />
       )}
     </div>
   );

@@ -393,6 +393,110 @@ export function commitElementTextMutation(
   return true;
 }
 
+/**
+ * Commit rich inline HTML mutation (e.g. <strong>, <em>, <u>, <code>, <a> from Floating Rich-Text Toolbar)
+ */
+export function commitElementInnerHtmlMutation(
+  file: string,
+  nodeId: NodeId,
+  newInnerHtml: string
+): boolean {
+  const yhtml = projectDoc.files.get(file);
+  if (!yhtml) return false;
+
+  const html = yhtml.toString();
+  const tree = parseHtmlToVNodes(file, html);
+  const vnode = tree.nodes[nodeId];
+  if (!vnode || !vnode.startTagRange || !vnode.endTagRange) return false;
+
+  const innerStart = vnode.startTagRange[1];
+  const innerEnd = vnode.endTagRange[0];
+  if (innerEnd < innerStart) return false;
+
+  const cleaned = newInnerHtml.replace(
+    /\b(src|href)=["']\/__vds_local\/([^"']+)["']/gi,
+    '$1="$2"'
+  );
+
+  projectDoc.undoManager.stopCapturing();
+  projectDoc.ydoc.transact(() => {
+    yhtml.delete(innerStart, innerEnd - innerStart);
+    yhtml.insert(innerStart, cleaned);
+  }, LOCAL_USER_ORIGIN);
+  projectDoc.undoManager.stopCapturing();
+
+  sandboxRegistry.broadcastPatch([
+    {
+      op: 'setInnerHtml',
+      id: nodeId,
+      html: cleaned,
+    },
+  ]);
+
+  return true;
+}
+
+/**
+ * AST-backed HTML Attribute / Trait Mutation (GrapesJS TraitManager equivalent)
+ * Preserves source formatting via parse5 startTagRange & attribute byte offsets.
+ */
+export function commitElementAttributeMutation(
+  file: string,
+  nodeId: NodeId,
+  attrName: string,
+  attrValue: string | null
+): boolean {
+  const cleanName = attrName.trim().toLowerCase();
+  if (!cleanName || cleanName === 'data-vds-id') return false;
+
+  const yhtml = projectDoc.files.get(file);
+  if (!yhtml) return false;
+
+  const html = yhtml.toString();
+  const tree = parseHtmlToVNodes(file, html);
+  const vnode = tree.nodes[nodeId];
+  if (!vnode || !vnode.startTagRange) return false;
+
+  const existingAttr = vnode.attrs.find((a) => a.name.toLowerCase() === cleanName);
+  const escapedVal =
+    attrValue !== null
+      ? attrValue.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+      : null;
+
+  projectDoc.undoManager.stopCapturing();
+  projectDoc.ydoc.transact(() => {
+    if (existingAttr && existingAttr.range[1] > existingAttr.range[0]) {
+      const [aStart, aEnd] = existingAttr.range;
+      if (escapedVal === null) {
+        const leadSpace = html[aStart - 1] === ' ' ? 1 : 0;
+        yhtml.delete(aStart - leadSpace, aEnd - aStart + leadSpace);
+      } else {
+        yhtml.delete(aStart, aEnd - aStart);
+        yhtml.insert(aStart, `${cleanName}="${escapedVal}"`);
+      }
+    } else if (escapedVal !== null && vnode.startTagRange) {
+      const [sStart, sEnd] = vnode.startTagRange;
+      const openSlice = html.slice(sStart, sEnd);
+      const isSelfClosing = openSlice.endsWith('/>');
+      const insertPos = isSelfClosing ? sEnd - 2 : sEnd - 1;
+      const prefixSpace = html[insertPos - 1] === ' ' ? '' : ' ';
+      yhtml.insert(insertPos, `${prefixSpace}${cleanName}="${escapedVal}"`);
+    }
+  }, LOCAL_USER_ORIGIN);
+  projectDoc.undoManager.stopCapturing();
+
+  sandboxRegistry.broadcastPatch([
+    {
+      op: 'setAttr',
+      id: nodeId,
+      name: cleanName,
+      value: attrValue,
+    },
+  ]);
+
+  return true;
+}
+
 export function deleteElementNode(file: string, nodeId: NodeId): boolean {
   const yhtml = projectDoc.files.get(file);
   if (!yhtml) return false;

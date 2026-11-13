@@ -1,12 +1,45 @@
 {
-  "name": "figrow-visual-dom-css-studio",
-  "private": true,
+  "name": "figrow",
+  "private": false,
   "version": "1.0.0",
+  "license": "MIT",
+  "author": "Figrow Contributors",
+  "homepage": "https://github.com/figrow/figrow#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/figrow/figrow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/figrow/figrow/issues"
+  },
   "type": "module",
-  "description": "Visual DOM & CSS Studio (Figma canvas UX + Pinegrow live HTML/CSS engine)",
+  "description": "Open-source, local-first Visual DOM & CSS Studio combining a Figma-grade multi-artboard infinite canvas with a lossless HTML5/CSS AST engine.",
+  "keywords": [
+    "visual-builder",
+    "html-editor",
+    "css-studio",
+    "web-design",
+    "figma-to-code",
+    "pinegrow",
+    "grapesjs-alternative",
+    "yjs",
+    "crdt",
+    "webmcp",
+    "react",
+    "typescript",
+    "postcss",
+    "parse5",
+    "ast",
+    "tailwind",
+    "open-source"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "preview": "vite preview",
     "test": "vitest run"
   },

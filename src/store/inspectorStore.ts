@@ -70,6 +70,7 @@ export interface InspectorStoreState {
   ) => StyleWriteTarget;
   updateToken: (name: `--${string}`, value: string, scope?: string) => void;
   getTokens: () => ReturnType<typeof parseDesignTokens>;
+  bumpInspector: () => void;
 }
 
 export function getMediaQueryForWidth(width: number): string | null {
@@ -217,4 +218,5 @@ export const useInspectorStore = create<InspectorStoreState>((set, get) => ({
   },
 
   getTokens: () => parseDesignTokens('css/styles.css'),
+  bumpInspector: () => set((s) => ({ inspectorRevision: s.inspectorRevision + 1 })),
 }));
