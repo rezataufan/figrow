@@ -48,7 +48,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@tanstack/react-virtual": "^3.10.8",
     "fflate": "^0.8.2",
-    "lucide-react": "^0.460.0",
+    "lucide-react": "^1.71.0",
     "monaco-editor": "^0.52.0",
     "parse5": "^8.0.0",
     "postcss": "^8.4.49",
